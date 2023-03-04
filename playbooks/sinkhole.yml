@@ -1,0 +1,48 @@
+---
+- name: Set sinkhole
+  hosts: dc, windows
+  gather_facts: False
+  tasks:
+    - name: create forward lookup zone
+      ignore_errors: True
+      ansible.windows.win_command: dnscmd {{fqdn}} /ZoneAdd {{domain}} /Dsprimary
+      when: "'dc' in group_names"
+    - name: Update www host with new addresses
+      ignore_errors: True
+      community.windows.win_dns_record:
+        name: "*"
+        type: "A"
+        values:
+          - 127.0.0.1 # this new value was added
+        zone: "{{domain}}" 
+      when: "'dc' in group_names"
+    - name: Update empty name host with new addresses
+      ignore_errors: True
+      community.windows.win_dns_record:
+        name: "{{domain}}"
+        type: "A"
+        values:
+          - 127.0.0.1 # this new value was added
+        zone: "{{domain}}" 
+      when: "'dc' in group_names"
+    - name: Update ipv6
+      ignore_errors: True
+      community.windows.win_dns_record:
+        name: "*"
+        type: "AAAA"
+        values:
+          - ::1 # this new value was added
+        zone: "{{domain}}"
+      when: "'dc' in group_names"
+    - name: Update ipv6
+      ignore_errors: True
+      community.windows.win_dns_record:
+        name: "{{domain}}"
+        type: "AAAA"
+        values:
+          - ::1 # this new value was added
+        zone: "{{domain}}"
+      when: "'dc' in group_names"
+    - name: flush ip dns
+      ansible.windows.win_command: ipconfig /flushdns
+      when: "'windows' in group_names"

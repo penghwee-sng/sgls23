@@ -1,0 +1,21 @@
+# Commands to run pre-playbook:
+
+# eval `ssh-agent`
+# ssh-add keys/id_rsa
+
+# ansible-playbook -i inventory_windows.ini persistence_verify_win.yaml
+# OR just run
+# ansible windows -i inventory_windows.ini -m win_ping
+
+---
+- name: SSH key persistency verify
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+  - name: Whoami
+    ansible.windows.win_command: whoami
+    register: whoami
+
+  - debug: msg="{{ whoami.stdout }}"

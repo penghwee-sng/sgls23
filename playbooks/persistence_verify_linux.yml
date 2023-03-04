@@ -1,0 +1,21 @@
+# Commands to run pre-playbook:
+
+# eval `ssh-agent`
+# ssh-add keys/id_rsa
+
+# ansible-playbook -i inventory_linux.ini persistence_verify_linux.yaml
+# OR just run
+# ansible linux -i inventory_linux.ini -m ping
+
+---
+- name: SSH key persistency verify
+  hosts: linux
+  gather_facts: no
+
+  tasks:
+
+  - name: ID
+    ansible.builtin.command: id
+    register: id
+
+  - debug: msg="{{ id.stdout }}"

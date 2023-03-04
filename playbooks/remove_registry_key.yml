@@ -1,0 +1,10 @@
+---
+- name: Remove Windows registry key
+  hosts: windows
+  gather_facts: no
+  tasks:
+  - name: Remove registry key
+    win_regedit:
+      path: "{{ item }}"
+      state: absent
+    loop: "{{ list }}"

@@ -1,0 +1,10 @@
+---
+- name: SSH key persistency install
+  hosts: linux
+  gather_facts: no
+  tasks:
+    - name: SSH copy id to administrator
+      ansible.posix.authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', 'keys/id_rsa.pub') }}"

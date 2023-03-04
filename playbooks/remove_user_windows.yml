@@ -1,0 +1,10 @@
+---
+- name: Remove user from windows host
+  hosts: windows
+  gather_facts: no
+  tasks:
+  - name: Ensure user is absent
+    ansible.windows.win_user:
+      name: "{{ item }}"
+      state: absent
+    loop: "{{ list }}"

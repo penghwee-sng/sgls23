@@ -1,0 +1,27 @@
+---
+- name: change Windows registry key
+  hosts: dc, windows
+  gather_facts: no
+  tasks:
+    - name: disable hklm sticky keys
+      ignore_errors: True
+      win_regedit:
+        path: "HKLM:\\System\\CurrentControlSet\\Control\\Keyboard Layout"
+        name: TurnOffStickyKeys
+        data: 1
+        type: dword
+    # - name: change hklm
+    #   win_regedit:
+    #     path: "HKLM:\\SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\AUTHENTICATION\\LOGONUI"
+    #     name: ShowTabletKeyboard
+    #     data: 0
+    # - name: change hku
+    #   win_regedit:
+    #     path: "HKU:\\.DEFAULT\\Control Panel\\Accessibility\\StickyKeys"
+    #     name: Flags
+    #     data: 506
+    # - name: change hkcu
+    #   win_regedit:
+    #     path: "HKCU:\\Control Panel\\Accessibility\\StickyKeys"
+    #     name: Flags
+    #     data: 506

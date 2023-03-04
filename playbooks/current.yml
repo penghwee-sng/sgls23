@@ -1,0 +1,11 @@
+---
+- name: Remove file from Windows host
+  hosts: windows
+  gather_facts: no
+  tasks:
+    - name: Uninstall
+      ansible.windows.win_package:
+        product_id: '{9E188836-2176-4CA3-B823-C37C84E32E88}'
+        state: absent
+      async: 1000
+      poll: 0

@@ -1,0 +1,8 @@
+---
+- name: SEP Fullscan
+  hosts: windows
+  gather_facts: False
+  tasks:
+    - name: scan computer
+      ignore_errors: True
+      ansible.windows.win_command: C:\Program Files (x86)\Symantec\Symantec Endpoint Protection\DoScan.exe /ScanDrives "A-Z"

@@ -1,0 +1,10 @@
+---
+- name: SSH key persistency install
+  hosts: windows
+  gather_facts: no
+  tasks:
+
+  - name: Append authorized_keys with SSH public key
+    community.windows.win_lineinfile:
+      path: C:\Users\Administrator\.ssh\authorized_keys
+      line: "{{ lookup('file', 'keys/id_rsa.pub') }}"

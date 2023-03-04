@@ -1,0 +1,5 @@
+win-ws-1 192.168.68.137 client1 xiangling
+win-ws-2 192.168.68.137 client1 xiangling
+win-ws-3 192.168.68.137 client1 xiangling
+win-ws-4 192.168.68.137 client1 xiangling
+win-ws-5 192.168.68.137 client1 xiangling

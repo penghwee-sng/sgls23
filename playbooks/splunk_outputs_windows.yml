@@ -1,0 +1,18 @@
+---
+- name: Set outputs.conf for Windows
+  hosts: windows
+  gather_facts: False
+  tasks:
+    - name: Removing file
+      win_file:
+        path: c:\Program Files\SplunkUniversalForwarder\etc\system\local\outputs.conf
+        state: absent
+    - name: Copy inputs conf to windows
+      template:
+        src: inputs.conf.j2
+        dest: c:\Program Files\SplunkUniversalForwarder\etc\system\local\outputs.conf
+    - name: Restart splunk service
+      ignore_errors: True
+      win_service:
+        name: SplunkForwarder Service
+        state: restarted

@@ -1,0 +1,66 @@
+---
+- name: Deploying sensors to Windows machines
+  hosts: windows  
+  tasks:
+  - name: Creating ansible_temp directory
+    ansible.windows.win_file:
+      path: c:\Users\Administrator\ansible_temp
+      state: directory
+
+  - name: Download files from Custom Server
+    ansible.windows.win_command: "curl.exe http://100.90.131.12:8000/deployment_folder.zip --output C:\\Users\\Administrator\\ansible_temp\\deployment_files.zip"
+
+  - name: Disabling UAC for Admin
+    ansible.windows.win_command: REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 0 /f
+    
+  - name: Unzipping files
+    ansible.windows.win_command: tar -xf C:/Users/Administrator/ansible_temp/deployment_files.zip -C C:/Users/Administrator/ansible_temp/
+
+  # - name: Installing SysMon
+  #   ansible.windows.win_command: C:/Users/Administrator/ansible_temp/deployment_files/sysmon/sysmon64.exe -accepteula -i C:/Users/Administrator/ansible_temp/deployment_files/sysmon/sysmonconfig_XLS.xml
+
+  # - name: install splunkforwarder msi
+  #   ignore_errors: True
+  #   ansible.windows.win_package: 
+  #     path: C:\Users\Administrator\ansible_temp\deployment_files\splunk\splunkforwarder-9.0.3-dd0128b1f8cd-x64-release.msi
+  #     arguments: RECEIVING_INDEXER="34.243.232.156:9997" SPLUNKPASSWORD=P@ssw0rd123  AGREETOLICENSE=Yes /quiet    
+
+  # - name: Copy inputs conf to windows
+  #   ignore_errors: True
+  #   template:
+  #     src: /home/ubuntu/Desktop/xls23/inputs.conf.j2
+  #     dest: c:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf
+    
+  # - name: Restart splunk service
+  #   ignore_errors: True
+  #   win_service:
+  #     name: SplunkForwarder Service
+  #     state: restarted   
+    
+    #2nd Change since SEP will restart the machine
+  # - name: Restart a service
+  #   ignore_errors: True
+  #   win_service:
+  #     name: SplunkForwarder Service
+  #     state: restarted
+    
+  # - name: Installing Carbon Black
+  #   ignore_errors: True
+  #   ansible.windows.win_package:
+  #     path: C:/Users/Administrator/ansible_temp/deployment_files/CB/CarbonBlackClientSetup.exe
+  #     arguments: /S
+
+  - name: Installing Symantec Endpoint Protection
+    ansible.windows.win_package:
+      path: C:/Users/Administrator/ansible_temp/deployment_files/setup.exe
+  
+  - name: Enabling UAC for Admin
+    ansible.windows.win_command: REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 1 /f
+  
+  - name: Removing ansible_temp directory
+    ansible.windows.win_file:
+      path: c:\Users\Administrator\ansible_temp
+      state: absent
+
+  - name: Reboot the machine with all defaults
+    ansible.windows.win_reboot:

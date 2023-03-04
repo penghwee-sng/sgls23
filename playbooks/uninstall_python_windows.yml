@@ -1,0 +1,10 @@
+---
+- name: Uninstall program on Windows
+  hosts: windows
+  gather_facts: no
+  tasks:
+    - name: Uninstall program
+      ansible.windows.win_package:
+        product_id: "{{ item }}"
+        state: absent
+      loop: {{ list }}
