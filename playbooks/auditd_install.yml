@@ -1,0 +1,63 @@
+---
+- name: Deploy Auditd
+  gather_facts: false
+  hosts: linux
+  become: true
+  vars:
+    - scan_directory: /
+  tasks:
+    - name: Update packages list
+      shell: sudo apt update
+
+    - name: Upgrade packages
+      shell: sudo apt upgrade -y
+
+    - name: Install Auditd
+      shell: sudo apt-get install auditd --assume-yes
+      tags: auditd
+
+    - name: Enable Auditd
+      shell: sudo systemctl enable auditd
+      tags: auditd
+
+    - name: Transfer audit.rules
+      ansible.builtin.copy:
+        src: resources/audit.rules
+        dest: /etc/audit/rules.d/audit.rules
+      tags: auditd
+
+    - name: Restart auditd
+      shell: sudo systemctl restart auditd
+      tags: auditd
+
+    - name: Install AppArmor
+      ansible.builtin.shell: sudo apt install apparmor -y
+      tags: apparmor
+
+    - name: Start AppArmor service
+      ansible.builtin.shell: sudo systemctl start apparmor
+      tags: apparmor
+
+    - name: Install ClamAV
+      ansible.builtin.shell: sudo apt install clamav clamav-daemon -y
+      tags: clamav
+
+    - name: Stop ClamAV freshclam for update
+      ansible.builtin.shell: sudo systemctl stop clamav-freshclam
+      tags: clamav
+
+    - name: Update VD
+      ansible.builtin.shell: sudo freshclam
+      tags: clamav
+
+    - name: Start ClamAV freshclam
+      ansible.builtin.shell: systemctl start clamav-freshclam
+      tags: clamav
+
+    - name: Enable ClamAV service
+      ansible.builtin.shell: systemctl enable clamav-freshclam
+      tags: clamav
+
+    - name: Update VD
+      ansible.builtin.shell: 'sudo clamscan --infected --recursive --no-summary {{ scan_directory }} | perl -ne ''$|=1; print localtime . ": [clamscan] $_"''>> /var/log/clamav/infected_files.log'
+      tags: clamav

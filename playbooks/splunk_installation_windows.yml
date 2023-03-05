@@ -1,0 +1,38 @@
+---
+- name: Install Splunk Universal Forwarder for Windows
+  hosts: windows
+  gather_facts: False
+  vars:
+    - download_url: http://192.168.38.174:8000
+    - splunk_ip: 192.168.38.174:9997
+  tasks:
+    - name: Creating ansible_temp directory
+      ignore_errors: True
+      ansible.windows.win_file:
+        path: c:/ansible_temp_splunk
+        state: directory
+    - name: Copy file from custom vm
+      ignore_errors: True
+      ansible.windows.win_command: curl.exe {{ download_url }}/splunk_installer.zip --output C:\\ansible_temp_splunk\\splunk_installer.zip
+    - name: Unzipping files
+      ignore_errors: True
+      ansible.windows.win_command: tar -xf c:/ansible_temp_splunk/splunk_installer.zip -C c:/ansible_temp_splunk
+    - name: install splunkforwarder msi
+      ignore_errors: True
+      ansible.windows.win_package:
+        path: c:\ansible_temp_splunk\files\splunkforwarder-9.0.3-dd0128b1f8cd-x64-release.msi
+        arguments: RECEIVING_INDEXER="{{ splunk_ip }}" SPLUNKPASSWORD=P@ssw0rd  AGREETOLICENSE=Yes /quiet
+    - name: Copy inputs conf to windows
+      ignore_errors: True
+      template:
+        src: /home/ubuntu/Desktop/xls23/inputs.conf.j2
+        dest: c:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf
+    - name: Restart splunk service
+      ignore_errors: True
+      win_service:
+        name: SplunkForwarder Service
+        state: restarted
+    - name: Removing ansible_temp directory
+      ansible.windows.win_file:
+        path: c:/ansible_temp_splunk
+        state: absent

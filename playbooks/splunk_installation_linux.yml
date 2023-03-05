@@ -1,0 +1,73 @@
+---
+- name: Deploy Splunk Universal Forwarder
+  gather_facts: false
+  hosts: linux
+  become: true
+  vars:
+    - download_url: http://192.168.38.174:8000
+    - splunk_ip: 192.168.38.174:9997
+  tasks:
+    - name: Check if Splunk Forwarder exists
+      stat:
+        path: /opt/splunkforwarder
+      register: splunk_stat
+
+    - name: Create /tmp/deploy
+      ansible.builtin.file:
+        path: /tmp/deploy
+        state: directory
+      when: not splunk_stat.stat.exists
+
+    - name: Download file and force basic auth
+      ansible.builtin.get_url:
+        url: "{{ download_url }}/splunkforwarder.tgz"
+        dest: /tmp/deploy/splunkforwarder.tgz
+      when: not splunk_stat.stat.exists
+
+    - name: Unzip Splunk file
+      ansible.builtin.unarchive:
+        src: /tmp/deploy/splunkforwarder.tgz
+        dest: /opt/
+        remote_src: yes
+      when: not splunk_stat.stat.exists
+
+    - name: Ensure group "splunk" exists
+      ansible.builtin.group:
+        name: splunk
+        state: present
+
+    - name: Add the user 'splunk'
+      ansible.builtin.user:
+        name: splunk
+        shell: /bin/bash
+        groups: splunk
+        append: yes
+
+    - name: Change owner
+      ansible.builtin.shell: sudo chown -R splunk:splunk /opt/splunkforwarder
+
+    - name: Auto start Splunk Forwarder on boot
+      expect:
+        command: sudo /opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes
+        timeout: 60
+        responses:
+          (.*)Please enter an administrator username(.*): "admin"
+          (.*)Please enter a new password(.*): "P@ssw0rd"
+          (.*)Please confirm new password(.*): "P@ssw0rd"
+
+    - name: Start Splunk Forwarder
+      ansible.builtin.shell: /opt/splunkforwarder/bin/splunk start --accept-license
+
+    - name: Configure the data to go to an indexer
+      ansible.builtin.shell: "sudo /opt/splunkforwarder/bin/splunk add forward-server {{ splunk_ip }} -auth admin:P@ssw0rd"
+
+    - name: Add files to monitor
+      ansible.builtin.shell: "sudo /opt/splunkforwarder/bin/splunk add monitor /var/log -index test-{{inventory_hostname.split('_')[0]}} -auth admin:P@ssw0rd"
+
+    - name: start splunk
+      ansible.builtin.shell: sudo /opt/splunkforwarder/bin/splunk restart
+
+    - name: Remove installer file
+      file:
+        path: /tmp/deploy/
+        state: absent

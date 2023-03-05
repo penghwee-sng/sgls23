@@ -3,8 +3,8 @@
   hosts: linux
   gather_facts: no
   tasks:
-    - name: SSH copy id to administrator
+    - name: Copy SSH key
       ansible.posix.authorized_key:
-        user: root
+        user: linux_user
         state: present
         key: "{{ lookup('file', 'keys/id_rsa.pub') }}"

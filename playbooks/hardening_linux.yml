@@ -1,0 +1,37 @@
+---
+- name: Harden Linux
+  gather_facts: false
+  hosts: linux
+  become: true
+  vars:
+    username: "linux_user"
+    password: "ThisIsTheLinuxPassword?"
+  tasks:
+    - name: change password
+      ansible.builtin.user:
+        name: "{{ username }}"
+        state: present
+        groups: sudo
+        append: yes
+        password: "{{ password | password_hash('sha512') }}"
+
+    - name: Enable Root Login
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^PermitRootLogin"
+        line: "PermitRootLogin no"
+
+    - name: Log SSH connections
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^LogLevel"
+        line: "LogLevel VERBOSE"
+
+    - name: Disable root Acc
+      ansible.builtin.user:
+        name: root
+        password_lock: yes
+
+  handlers:
+    - name: Reboot machine
+      ansible.builtin.reboot:
