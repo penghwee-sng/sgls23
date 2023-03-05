@@ -16,39 +16,39 @@
   - name: Unzipping files
     ansible.windows.win_command: tar -xf C:/Users/Administrator/ansible_temp/deployment_files.zip -C C:/Users/Administrator/ansible_temp/
 
-  # - name: Installing SysMon
-  #   ansible.windows.win_command: C:/Users/Administrator/ansible_temp/deployment_files/sysmon/sysmon64.exe -accepteula -i C:/Users/Administrator/ansible_temp/deployment_files/sysmon/sysmonconfig_XLS.xml
+  - name: Installing SysMon
+    ansible.windows.win_command: C:/Users/Administrator/ansible_temp/deployment_files/sysmon/sysmon64.exe -accepteula -i C:/Users/Administrator/ansible_temp/deployment_files/sysmon/sysmonconfig_XLS.xml
 
-  # - name: install splunkforwarder msi
-  #   ignore_errors: True
-  #   ansible.windows.win_package: 
-  #     path: C:\Users\Administrator\ansible_temp\deployment_files\splunk\splunkforwarder-9.0.3-dd0128b1f8cd-x64-release.msi
-  #     arguments: RECEIVING_INDEXER="34.243.232.156:9997" SPLUNKPASSWORD=P@ssw0rd123  AGREETOLICENSE=Yes /quiet    
+  - name: install splunkforwarder msi
+    ignore_errors: True
+    ansible.windows.win_package: 
+      path: C:\Users\Administrator\ansible_temp\deployment_files\splunk\splunkforwarder-9.0.3-dd0128b1f8cd-x64-release.msi
+      arguments: RECEIVING_INDEXER="34.243.232.156:9997" SPLUNKPASSWORD=P@ssw0rd123  AGREETOLICENSE=Yes /quiet    
 
-  # - name: Copy inputs conf to windows
-  #   ignore_errors: True
-  #   template:
-  #     src: /home/ubuntu/Desktop/xls23/inputs.conf.j2
-  #     dest: c:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf
+  - name: Copy inputs conf to windows
+    ignore_errors: True
+    template:
+      src: /home/ubuntu/Desktop/xls23/inputs.conf.j2
+      dest: c:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf
     
-  # - name: Restart splunk service
-  #   ignore_errors: True
-  #   win_service:
-  #     name: SplunkForwarder Service
-  #     state: restarted   
+  - name: Restart splunk service
+    ignore_errors: True
+    win_service:
+      name: SplunkForwarder Service
+      state: restarted   
     
-    #2nd Change since SEP will restart the machine
-  # - name: Restart a service
-  #   ignore_errors: True
-  #   win_service:
-  #     name: SplunkForwarder Service
-  #     state: restarted
+    2nd Change since SEP will restart the machine
+  - name: Restart a service
+    ignore_errors: True
+    win_service:
+      name: SplunkForwarder Service
+      state: restarted
     
-  # - name: Installing Carbon Black
-  #   ignore_errors: True
-  #   ansible.windows.win_package:
-  #     path: C:/Users/Administrator/ansible_temp/deployment_files/CB/CarbonBlackClientSetup.exe
-  #     arguments: /S
+  - name: Installing Carbon Black
+    ignore_errors: True
+    ansible.windows.win_package:
+      path: C:/Users/Administrator/ansible_temp/deployment_files/CB/CarbonBlackClientSetup.exe
+      arguments: /S
 
   - name: Installing Symantec Endpoint Protection
     ansible.windows.win_package:
