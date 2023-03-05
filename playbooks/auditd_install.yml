@@ -60,4 +60,6 @@
 
     - name: Update VD
       ansible.builtin.shell: 'sudo clamscan --infected --recursive --no-summary {{ scan_directory }} | perl -ne ''$|=1; print localtime . ": [clamscan] $_"''>> /var/log/clamav/infected_files.log'
-      tags: clamav
+      tags:
+        - clamav
+        - avscan
