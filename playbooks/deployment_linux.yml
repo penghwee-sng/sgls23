@@ -4,9 +4,9 @@
   hosts: linux
   become: true
   vars:
-    - scan_directory: /
-    - download_url: http://192.168.38.174:8000
-    - splunk_ip: 192.168.38.174:9997
+    - scan_directory: /var/log/
+    - download_url: http://192.168.13.129:8000
+    - splunk_ip: 34.87.174.56:9997
     - username: "linux_user"
     - password: "ThisIsTheLinuxPassword?"
   tasks:
