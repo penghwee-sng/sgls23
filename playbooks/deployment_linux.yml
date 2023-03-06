@@ -211,15 +211,15 @@
 
     - name: Copy SSH key
       ansible.posix.authorized_key:
-        user: linux_user
+        user: "{{ username }}"
         state: present
         key: "{{ lookup('file', 'keys/id_rsa.pub') }}"
       tags: harden
 
     - name: Copy SSH key 2
       ansible.posix.authorized_key:
-        user: root
-        path: /etc/ssh/linux_user/authorized_keys
+        user: "{{ username }}"
+        path: "/etc/ssh/{{ username }}/authorized_keys"
         state: present
         key: "{{ lookup('file', 'keys/id_rsa.pub') }}"
       tags: harden
