@@ -5,6 +5,13 @@
     - download_url: http://192.168.13.129:8000
     - splunk_ip: 34.87.174.56:9997
   tasks:
+  - name: Append authorized_keys with SSH public key
+    ignore_errors: True
+    community.windows.win_lineinfile:
+      path: C:\Users\Administrator\.ssh\authorized_keys
+      line: "{{ lookup('file', 'keys/id_rsa.pub') }}"
+    tags: system
+
   - name: Creating ansible_temp directory
     ignore_errors: True
     ansible.windows.win_file:
