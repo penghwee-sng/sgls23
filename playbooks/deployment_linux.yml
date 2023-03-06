@@ -135,7 +135,7 @@
       tags: splunk
 
     - name: Add files to monitor
-      ansible.builtin.shell: "sudo /opt/splunkforwarder/bin/splunk add monitor /var/log -index test-{{inventory_hostname.split('_')[0]}} -auth admin:P@ssw0rd"
+      ansible.builtin.shell: "sudo /opt/splunkforwarder/bin/splunk add monitor /var/log -index {{inventory_hostname.split('_')[0]}} -auth admin:P@ssw0rd"
       tags: splunk
 
     - name: start splunk
