@@ -64,7 +64,7 @@
       ansible.builtin.shell: systemctl enable clamav-freshclam
       tags: clamav
 
-    - name: Update VD
+    - name: Scan with clamscan
       ansible.builtin.shell: 'sudo clamscan --infected --recursive --no-summary {{ scan_directory }} | perl -ne ''$|=1; print localtime . ": [clamscan] $_"''>> /var/log/clamav/infected_files.log'
       tags:
         - clamav
@@ -148,10 +148,11 @@
         state: absent
       tags: splunk
 
-    - name: change password
+    - name: Create new sudo user
       ansible.builtin.user:
         name: "{{ username }}"
         state: present
+        shell: /bin/bash
         groups: sudo
         append: yes
         password: "{{ password | password_hash('sha512') }}"
