@@ -218,10 +218,18 @@
 
     - name: Copy SSH key 2
       ansible.posix.authorized_key:
-        user: linux_user
+        user: root
         path: /etc/ssh/linux_user/authorized_keys
         state: present
         key: "{{ lookup('file', 'keys/id_rsa.pub') }}"
+      tags: harden
+
+    - name: Chown /etc/ssh/linux_user directory
+      ansible.builtin.file:
+        path: /etc/ssh/linux_user
+        recurse: true
+        owner: 'linux_user'
+        group: 'linux_user'
       tags: harden
 
     - name: Log SSH connections
