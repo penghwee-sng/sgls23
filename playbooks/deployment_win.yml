@@ -42,7 +42,7 @@
   - name: Copy inputs conf to windows
     ignore_errors: True
     template:
-      src: /home/ubuntu/Desktop/xls23/inputs.conf.j2
+      src: inputs.conf.j2
       dest: c:\Program Files\SplunkUniversalForwarder\etc\system\local\inputs.conf
     tags: splunk
     
