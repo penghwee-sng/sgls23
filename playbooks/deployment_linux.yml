@@ -150,7 +150,7 @@
 
     - name: Check if Carbon Black exists
       stat:
-        path: /opt/splunkforwarder
+        path: /var/opt/carbonblack
       register: cb_stat
       tags: carbonblack
 
