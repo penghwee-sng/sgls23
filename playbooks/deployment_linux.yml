@@ -154,6 +154,13 @@
       register: cb_stat
       tags: carbonblack
 
+    - name: Create /tmp/deploy
+      ansible.builtin.file:
+        path: /tmp/deploy
+        state: directory
+      when: not cb_stat.stat.exists
+      tags: carbonblack
+
     - name: Download file (Carbon Black)
       ansible.builtin.get_url:
         url: "{{ download_url }}/CarbonBlackLinuxInstaller.tar.gz"
