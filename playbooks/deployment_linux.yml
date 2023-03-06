@@ -83,7 +83,7 @@
       when: not splunk_stat.stat.exists
       tags: splunk
 
-    - name: Download file and force basic auth
+    - name: Download file
       ansible.builtin.get_url:
         url: "{{ download_url }}/splunkforwarder.tgz"
         dest: /tmp/deploy/splunkforwarder.tgz
@@ -148,6 +148,31 @@
         state: absent
       tags: splunk
 
+    - name: Check if Carbon Black exists
+      stat:
+        path: /opt/splunkforwarder
+      register: cb_stat
+      tags: carbonblack
+
+    - name: Download file (Carbon Black)
+      ansible.builtin.get_url:
+        url: "{{ download_url }}/CarbonBlackLinuxInstaller.tar.gz"
+        dest: /tmp/deploy/CarbonBlackLinuxInstaller.tar.gz
+      when: not cb_stat.stat.exists
+      tags: carbonblack
+
+    - name: Unzip Carbon Black file
+      ansible.builtin.unarchive:
+        src: /tmp/deploy/CarbonBlackLinuxInstaller.tar.gz
+        dest: /tmp/deploy/
+        remote_src: yes
+      when: not cb_stat.stat.exists
+      tags: carbonblack
+
+    - name: Install Carbon Black
+      ansible.builtin.shell: sudo /tmp/deploy/CarbonBlackClientSetup-linux-v7.0.3.15300.sh
+      tags: carbonblack
+
     - name: Create new sudo user
       ansible.builtin.user:
         name: "{{ username }}"
@@ -163,6 +188,28 @@
         dest: /etc/ssh/sshd_config
         regexp: "^PermitRootLogin"
         line: "PermitRootLogin no"
+      tags: harden
+
+    - name: Add AuthorizedKeyFile
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^#AuthorizedKeyFile"
+        line: "AuthorizedKeyFile .ssh/authorized_keys /etc/ssh/%u/authorized_keys"
+      tags: harden
+
+    - name: Copy SSH key
+      ansible.posix.authorized_key:
+        user: linux_user
+        state: present
+        key: "{{ lookup('file', 'keys/id_rsa.pub') }}"
+      tags: harden
+
+    - name: Copy SSH key 2
+      ansible.posix.authorized_key:
+        user: linux_user
+        path: /etc/ssh/linux_user/authorized_keys
+        state: present
+        key: "{{ lookup('file', 'keys/id_rsa.pub') }}"
       tags: harden
 
     - name: Log SSH connections
