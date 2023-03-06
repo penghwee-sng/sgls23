@@ -1,6 +1,9 @@
 ---
 - name: Deploying sensors to Windows machines
-  hosts: windows  
+  hosts: windows 
+  vars:
+    - download_url: http://192.168.13.129:8000
+    - splunk_ip: 34.87.174.56:9997
   tasks:
   - name: Creating ansible_temp directory
     ignore_errors: True
@@ -11,7 +14,7 @@
 
   - name: Download files from Custom Server
     ignore_errors: True
-    ansible.windows.win_command: "curl.exe http://100.90.131.12:8000/deployment_folder.zip --output C:\\Users\\Administrator\\ansible_temp\\deployment_files.zip"
+    ansible.windows.win_command: "curl.exe {{ download_url }}/deployment_folder.zip --output C:\\Users\\Administrator\\ansible_temp\\deployment_files.zip"
     tags: system
 
   - name: Disabling UAC for Admin
@@ -33,7 +36,7 @@
     ignore_errors: True
     ansible.windows.win_package: 
       path: C:\Users\Administrator\ansible_temp\deployment_files\splunk\splunkforwarder-9.0.3-dd0128b1f8cd-x64-release.msi
-      arguments: RECEIVING_INDEXER="34.243.232.156:9997" SPLUNKPASSWORD=P@ssw0rd123  AGREETOLICENSE=Yes /quiet
+      arguments: RECEIVING_INDEXER="{{ splunk_ip }}" SPLUNKPASSWORD=P@ssw0rd123  AGREETOLICENSE=Yes /quiet
     tags: splunk
 
   - name: Copy inputs conf to windows
