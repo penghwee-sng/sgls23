@@ -1,9 +1,0 @@
-- name: disable SSH AllowTcpForwarding 
-  hosts: linux
-  become: yes
-  tasks:
-  - name: disable SSH AllowTcpForwarding 
-    ansible.builtin.lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '#AllowTcpForwarding'
-      line: AllowTcpForwarding no

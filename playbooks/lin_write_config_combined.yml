@@ -1,0 +1,72 @@
+- hosts: linux
+  become: yes
+  tasks:
+  - name: disable SSH AllowTcpForwarding 
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '#AllowTcpForwarding'
+      line: AllowTcpForwarding no
+
+  - name: disable SSH PermitUserEnvironment
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '#PermitUserEnvironment'
+      line: PermitUserEnvironment no
+
+  - name: Change file ownership, group and permissions (/etc/group)
+    ansible.builtin.file:
+      path: /etc/group
+      owner: root
+      group: root
+      mode: u-x,go-wx
+  - name: Change file ownership, group and permissions (/etc/group-)
+    ansible.builtin.file:
+      path: /etc/group-
+      owner: root
+      group: root
+      mode: u-x,go-wx
+
+  - name: Change file ownership, group and permissions (/etc/passwd)
+    ansible.builtin.file:
+      path: /etc/passwd
+      owner: root
+      group: root
+      mode: u-x,go-wx
+  - name: Change file ownership, group and permissions (/etc/passwd-)
+    ansible.builtin.file:
+      path: /etc/passwd-
+      owner: root
+      group: root
+      mode: u-x,go-wx
+
+  - name: Change file ownership, group and permissions (/etc/shadow)
+    ansible.builtin.file:
+      path: /etc/shadow
+      owner: root
+      group: shadow
+      mode: u-x,g-wx,o-rwx
+  - name: Change file ownership, group and permissions (/etc/shadow-)
+    ansible.builtin.file:
+      path: /etc/shadow-
+      owner: root
+      group: shadow
+      mode: u-x,g-wx,o-rwx
+  - name: Change file ownership, group and permissions (/etc/gshadow)
+    ansible.builtin.file:
+      path: /etc/gshadow
+      owner: root
+      group: shadow
+      mode: u-x,g-wx,o-rwx
+  - name: Change file ownership, group and permissions (/etc/gshadow-)
+    ansible.builtin.file:
+      path: /etc/gshadow-
+      owner: root
+      group: shadow
+      mode: u-x,g-wx,o-
+      
+  - name: Change file ownership, group and permissions (/etc/ssh/sshd_config)
+    ansible.builtin.file:
+      path: /etc/ssh/sshd_config
+      owner: root
+      group: root
+      mode: og-rwx
