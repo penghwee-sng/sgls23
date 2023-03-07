@@ -2,6 +2,7 @@
 - name: Remove file from host
   hosts: linux
   gather_facts: no
+  become: True
   tasks:
     - name: Remove file
       file:
