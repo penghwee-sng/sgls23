@@ -1,0 +1,8 @@
+---
+- name: Run Linux Command
+  hosts: linux
+  gather_facts: False
+  tasks:
+    - ansible.builtin.shell: "{{ cmd }}"
+      register: out
+    - debug: var=out.stdout_lines

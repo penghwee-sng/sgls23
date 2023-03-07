@@ -1,7 +1,9 @@
 ---
-- name: FORCE RESTART
+- name: Force gpupdate
   hosts: windows
   gather_facts: False
   tasks:
-    - name: Run cmd
-      ansible.windows.win_command: "shutdown -f now"
+    - name: gpupdate
+      ansible.windows.win_command: "gpupdate /force"
+    - name: Reboot
+      ansible.windows.win_reboot:

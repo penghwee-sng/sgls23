@@ -1,6 +1,6 @@
 ---
 - name: change Windows registry key
-  hosts: dc, windows
+  hosts: windows
   gather_facts: no
   tasks:
     - name: disable hklm sticky keys
