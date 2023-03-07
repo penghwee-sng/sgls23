@@ -60,14 +60,6 @@
       state: restarted
     tags: splunk
     
-    # 2nd Change since SEP will restart the machine
-  - name: Restart a service
-    ignore_errors: True
-    win_service:
-      name: SplunkForwarder Service
-      state: restarted
-    tags: splunk
-    
   - name: Installing Carbon Black
     ignore_errors: True
     ansible.windows.win_package:
