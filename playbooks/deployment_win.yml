@@ -8,20 +8,20 @@
   - name: Append authorized_keys with SSH public key
     ignore_errors: True
     community.windows.win_lineinfile:
-      path: C:\Users\Administrator\.ssh\authorized_keys
+      path: C:\Users\{{ ansible_user }}\.ssh\authorized_keys
       line: "{{ lookup('file', 'keys/id_rsa.pub') }}"
     tags: system
 
   - name: Creating ansible_temp directory
     ignore_errors: True
     ansible.windows.win_file:
-      path: c:\Users\Administrator\ansible_temp
+      path: c:\Users\{{ ansible_user }}\ansible_temp
       state: directory
     tags: system
 
   - name: Download files from Custom Server
     ignore_errors: True
-    ansible.windows.win_command: "curl.exe {{ download_url }}/deployment_folder.zip --output C:\\Users\\Administrator\\ansible_temp\\deployment_files.zip"
+    ansible.windows.win_command: "curl.exe {{ download_url }}/deployment_folder.zip --output C:\\Users\\{{ ansible_user }}\\ansible_temp\\deployment_files.zip"
     tags: system
 
   - name: Disabling UAC for Admin
@@ -31,18 +31,18 @@
     
   - name: Unzipping files
     ignore_errors: True
-    ansible.windows.win_command: tar -xf C:/Users/Administrator/ansible_temp/deployment_files.zip -C C:/Users/Administrator/ansible_temp/
+    ansible.windows.win_command: tar -xf C:/Users/{{ ansible_user }}/ansible_temp/deployment_files.zip -C C:/Users/{{ ansible_user }}/ansible_temp/
     tags: system
 
   - name: Installing SysMon
     ignore_errors: True
-    ansible.windows.win_command: C:/Users/Administrator/ansible_temp/deployment_files/sysmon/sysmon64.exe -accepteula -i C:/Users/Administrator/ansible_temp/deployment_files/sysmon/sysmonconfig_XLS.xml
+    ansible.windows.win_command: C:/Users/{{ ansible_user }}/ansible_temp/deployment_files/sysmon/sysmon64.exe -accepteula -i C:/Users/{{ ansible_user }}/ansible_temp/deployment_files/sysmon/sysmonconfig_XLS.xml
     tags: sysmon
 
   - name: install splunkforwarder msi
     ignore_errors: True
     ansible.windows.win_package: 
-      path: C:\Users\Administrator\ansible_temp\deployment_files\splunk\splunkforwarder-9.0.3-dd0128b1f8cd-x64-release.msi
+      path: C:\Users\{{ ansible_user }}\ansible_temp\deployment_files\splunk\splunkforwarder-9.0.3-dd0128b1f8cd-x64-release.msi
       arguments: RECEIVING_INDEXER="{{ splunk_ip }}" SPLUNKPASSWORD=P@ssw0rd123  AGREETOLICENSE=Yes /quiet
     tags: splunk
 
@@ -63,14 +63,14 @@
   - name: Installing Carbon Black
     ignore_errors: True
     ansible.windows.win_package:
-      path: C:/Users/Administrator/ansible_temp/deployment_files/CB/CarbonBlackClientSetup.exe
+      path: C:/Users/{{ ansible_user }}/ansible_temp/deployment_files/CB/CarbonBlackClientSetup.exe
       arguments: /S
     tags: carbonblack
 
   - name: Installing Symantec Endpoint Protection
     ignore_errors: True
     ansible.windows.win_package:
-      path: C:/Users/Administrator/ansible_temp/deployment_files/setup.exe
+      path: C:/Users/{{ ansible_user }}/ansible_temp/deployment_files/setup.exe
     tags: sep
   
   - name: Enabling UAC for Admin
@@ -81,7 +81,7 @@
   - name: Removing ansible_temp directory
     ignore_errors: True
     ansible.windows.win_file:
-      path: c:\Users\Administrator\ansible_temp
+      path: c:\Users\{{ ansible_user }}\ansible_temp
       state: absent
     tags: system
 
