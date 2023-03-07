@@ -1,0 +1,99 @@
+---
+- name: Deploying sensors to FreeBSD machines
+  hosts: linux
+  become: True
+  gather_facts: false
+  vars:
+    - download_url: http://192.168.3.97:80
+    - splunk_ip: 192.168.3.97:9997
+  tasks:
+  
+     - name: Enable auditd service
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: sysrc auditd_enable=YES && service auditd start
+       when: '"freebsd" in os'
+       tags: auditd
+         
+         
+     - name: Install ClamAV
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: pkg install -y clamav
+       when: '"freebsd" in os'
+       tags: clamav 
+     - name: Update clamav signature database
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: freshclam
+       when: '"freebsd" in os'
+       tags: clamav 
+     - name: Enable ClamAV service
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: sysrc clamav_freshclam_enable=YES && service clamav-freshclam start && sysrc clamav_clamd_enable=YES
+       when: '"freebsd" in os'
+       tags: clamav  
+     - name: Start ClamAV service
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: sysrc clamav_clamd_enable=YES && service clamav-clamd start
+       when: '"freebsd" in os'
+       tags: clamav 
+
+
+     - name: Download splunkforwarder
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: mkdir /tmp/deploy && mkdir /opt && pkg install -y wget
+       when: '"freebsd" in os'
+       tags: system
+     - name: Download splunkforwarder
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: cd /tmp/deploy && wget {{ download_url }}/splunkforwarder-9.0.4-de405f4a7979-freebsd-11.3-amd64.txz
+       when: '"freebsd" in os'       
+       tags: splunk
+     - name: Extract splunkforwarder package
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: cd /tmp/deploy && pkg install -y splunkforwarder-9.0.4-de405f4a7979-freebsd-11.3-amd64.txz
+       when: '"freebsd" in os'       
+       tags: splunk
+     - name: Start Splunk service
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: /opt/splunkforwarder/bin/splunk start -systemd-managed 0 -user admin --accept-license --answer-yes --no-prompt --seed-passwd P@ssw0rd
+       when: '"freebsd" in os'       
+       tags: splunk    
+     - name: Add splunk server IP address
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: /opt/splunkforwarder/bin/splunk add forward-server {{ splunk_ip }}
+       when: '"freebsd" in os'       
+       tags: splunk
+     - name: Add monitor for var/log/*
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: /opt/splunkforwarder/bin/splunk add monitor '/var/log' -index {{inventory_hostname.split('_')[0]}} -sourcetype linux
+       when: '"freebsd" in os'       
+       tags: splunk
+     - name: enable boot start
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: /opt/splunkforwarder/bin/splunk enable boot-start
+       when: '"freebsd" in os'       
+       tags: splunk
+     - name: Restart splunk service
+       ignore_errors: True
+       ansible.builtin.shell:
+         cmd: /opt/splunkforwarder/bin/splunk restart
+       when: '"freebsd" in os'       
+       tags: splunk
+        
+     - name: Remove installer file
+       ignore_errors: True
+       file:
+         path: /tmp/deploy
+         state: absent
+       tags: system
