@@ -1,12 +1,14 @@
 ---
-- name: Set sinkhole
-  hosts: dc, windows
+- name: sinkhole
+  hosts: windows
   gather_facts: False
+  vars:
+    domain: "progdefence.crx"
   tasks:
     - name: create forward lookup zone
       ignore_errors: True
       ansible.windows.win_command: dnscmd {{fqdn}} /ZoneAdd {{domain}} /Dsprimary
-      when: "'dc' in group_names"
+      when: "'dc' in inventory_hostname"
     - name: Update www host with new addresses
       ignore_errors: True
       community.windows.win_dns_record:
@@ -15,7 +17,7 @@
         values:
           - 127.0.0.1 # this new value was added
         zone: "{{domain}}" 
-      when: "'dc' in group_names"
+      when: "'dc' in inventory_hostname"
     - name: Update empty name host with new addresses
       ignore_errors: True
       community.windows.win_dns_record:
@@ -24,7 +26,7 @@
         values:
           - 127.0.0.1 # this new value was added
         zone: "{{domain}}" 
-      when: "'dc' in group_names"
+      when: "'dc' in inventory_hostname"
     - name: Update ipv6
       ignore_errors: True
       community.windows.win_dns_record:
@@ -33,7 +35,7 @@
         values:
           - ::1 # this new value was added
         zone: "{{domain}}"
-      when: "'dc' in group_names"
+      when: "'dc' in inventory_hostname"
     - name: Update ipv6
       ignore_errors: True
       community.windows.win_dns_record:
@@ -42,7 +44,8 @@
         values:
           - ::1 # this new value was added
         zone: "{{domain}}"
-      when: "'dc' in group_names"
+      when: "'dc' in inventory_hostname"
     - name: flush ip dns
+      ignore_errors: True
       ansible.windows.win_command: ipconfig /flushdns
       when: "'windows' in group_names"
