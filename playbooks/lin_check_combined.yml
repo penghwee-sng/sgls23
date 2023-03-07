@@ -1,0 +1,37 @@
+- hosts: linux
+  become: yes
+  tasks:
+  - ansible.builtin.shell: awk -F {{":"}} '($2 == "" ) { print $1 " does not have a password "}' /etc/shadow
+    register: out
+  - name: Check there is no account with no password
+    debug: var=out.stdout_lines
+
+  - ansible.builtin.command: grep "^root:" /etc/passwd 
+    register: out
+  - name: Check default group for the root account (should be root:x:0:0:root)
+    debug: var=out.stdout_lines
+
+  - ansible.builtin.shell: grep -r "^[^#].*NOPASSWD" /etc/sudoers* || /bin/true
+    register: out
+  - name: Check for user with no password required to sudo
+    debug: var=out.stdout_lines
+
+  - ansible.builtin.command: grep "#net.ipv4.ip_forward=1" /etc/sysctl.conf
+    register: out
+  - name: Check for ipv4 forwarding enabled (should be commented out or =0)
+    debug: var=out.stdout_lines
+
+  - ansible.builtin.command: grep "#net.ipv6.conf.all.forwarding=1" /etc/sysctl.conf
+    register: out
+  - name: Check for ipv6 forwarding enabled (should be commented out or =0)
+    debug: var=out.stdout_lines
+
+  - ansible.builtin.shell: awk -F {{":"}} '($1=="shadow") {print $NF}' /etc/group {{"#"}} awk -F{{":"}} -v GID="$(awk -F{{":"}} '($1=="shadow") {print $3}' /etc/group)" '($4==GID) {print $1}' /etc/passwd 
+    register: out
+  - name: Check that shadow group should be empty
+    debug: var=out.stdout_lines
+
+  - ansible.builtin.shell: cut -d {{":"}} -f1,3 /etc/passwd | egrep ':[0-9]{4}$' | cut -d {{":"}} -f1
+    register: out
+  - name: List Normal User (UID >=1000)
+    debug: var=out.stdout_lines

@@ -1,9 +1,0 @@
-- name: disable SSH PermitUserEnvironment
-  hosts: linux
-  become: yes
-  tasks:
-  - name: disable SSH PermitUserEnvironment
-    ansible.builtin.lineinfile:
-      path: /etc/ssh/sshd_config
-      regexp: '#PermitUserEnvironment'
-      line: PermitUserEnvironment no
