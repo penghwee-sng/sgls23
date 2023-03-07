@@ -1,7 +1,0 @@
-- name: Check for account with no password
-  hosts: linux
-  become: yes
-  tasks:
-  - name: Check for account with no password
-    ansible.builtin.shell: awk -F {{":"}} '($2 == "" ) { print $1 " does not have a password "}' /etc/shadow
-    register: out
