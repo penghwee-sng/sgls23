@@ -1,0 +1,17 @@
+- name: passwd accessible by root only
+  hosts: linux
+  become: yes
+  tasks:
+  - name: Change file ownership, group and permissions
+    ansible.builtin.file:
+      path: /etc/passwd
+      owner: root
+      group: root
+      mode: u-x,go-wx
+
+  - name: Change file ownership, group and permissions
+    ansible.builtin.file:
+      path: /etc/passwd-
+      owner: root
+      group: root
+      mode: u-x,go-wx

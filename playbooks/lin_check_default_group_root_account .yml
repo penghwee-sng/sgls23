@@ -1,0 +1,10 @@
+- name: Check default group for the root account 
+  hosts: linux
+  become: yes
+  tasks:
+  - name: default group for the root account 
+    ansible.builtin.command: grep "^root:" /etc/passwd 
+    register: out
+
+  - name: default group for the root account 
+    debug: var=out.stdout_lines

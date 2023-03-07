@@ -1,0 +1,31 @@
+- name: shadow accessible by root only
+  hosts: linux
+  become: yes
+  tasks:
+  - name: Change file ownership, group and permissions
+    ansible.builtin.file:
+      path: /etc/shadow
+      owner: root
+      group: shadow
+      mode: u-x,g-wx,o-rwx
+
+  - name: Change file ownership, group and permissions
+    ansible.builtin.file:
+      path: /etc/shadow-
+      owner: root
+      group: shadow
+      mode: u-x,g-wx,o-rwx
+
+  - name: Change file ownership, group and permissions
+    ansible.builtin.file:
+      path: /etc/gshadow
+      owner: root
+      group: shadow
+      mode: u-x,g-wx,o-rwx
+
+  - name: Change file ownership, group and permissions
+    ansible.builtin.file:
+      path: /etc/gshadow-
+      owner: root
+      group: shadow
+      mode: u-x,g-wx,o-rwx

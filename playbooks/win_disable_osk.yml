@@ -1,0 +1,16 @@
+- name: disable OSK
+  hosts: windows
+  tasks:
+  - name: test
+    ansible.windows.win_regedit:
+      path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI 
+      name: ShowTabletKeyboard
+      data: 0
+      type: dword
+
+  - name: test
+    ansible.windows.win_regedit:
+      path: HKLM:\SOFTWARE\Microsoft\Windows Embedded\EmbeddedLogon
+      name: BrandingNeutral
+      data: 8
+      type: dword
