@@ -1,11 +1,9 @@
 ---
-- name: change Windows registry key
-  hosts: dc, windows
+- name: Disable Sticky Keys
+  hosts: windows
   gather_facts: no
   tasks:
-    - name: disable hklm sticky keys
-      ignore_errors: True
-      win_regedit:
+    - win_regedit:
         path: "HKLM:\\System\\CurrentControlSet\\Control\\Keyboard Layout"
         name: TurnOffStickyKeys
         data: 1

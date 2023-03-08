@@ -1,0 +1,10 @@
+---
+- name: Remove domain user from AD
+  hosts: *dc*
+  gather_facts: no
+  tasks:
+  - name: Ensure user is absent
+    community.windows.win_domain_user:
+      name: "{{ item }}"
+      state: absent
+    loop: "{{ list }}"

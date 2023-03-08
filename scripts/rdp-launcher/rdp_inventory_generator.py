@@ -16,7 +16,7 @@ for entry in base_list:
     filter_list.append(entry)
     #print(entry)
 
-with open(r'scripts\rdp-launcher\inventory.txt', "w") as f:
+with open(r'scripts/rdp-launcher/inventory.txt', "w") as f:
     for entry in filter_list:
         ip_addr = [x.split("ansible_host=")[1] for x in entry.split() if "ansible_host=" in x]
         ip_addr = ip_addr[0] if ip_addr else ""  # use empty string as default
