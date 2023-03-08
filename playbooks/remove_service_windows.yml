@@ -1,0 +1,13 @@
+---
+- name: Delete service from Windows
+  hosts: windows
+  gather_facts: false
+  vars:
+    list:
+      - WbemSvc
+  tasks:
+    - name: Delete service
+      ansible.windows.win_command:
+        cmd: sc.exe delete "{{ item }}"
+      ignore_errors: true
+      loop: "{{ list }}"
