@@ -2,7 +2,7 @@
 - name: Deployment for Linux
   gather_facts: false
   hosts: linux
-  become: true
+  become: yes
   vars:
     - scan_directory: /var/log/
     - download_url: http://192.168.13.129:8000
@@ -12,10 +12,12 @@
   tasks:
     - name: Update packages list
       shell: sudo apt update
+      ignore_errors: yes
       tags: system
 
     - name: Upgrade packages
       shell: sudo apt upgrade -y
+      ignore_errors: yes
       tags: system
 
     - name: Install Auditd
@@ -85,7 +87,7 @@
 
     - name: Download file
       ansible.builtin.get_url:
-        url: "{{ download_url }}/splunkforwarder.tgz"
+        url: "https://temp.sh/GTXDm/splunkforwarder.tgz"
         dest: /tmp/deploy/splunkforwarder.tgz
       when: not splunk_stat.stat.exists
       tags: splunk
@@ -145,7 +147,7 @@
 
     - name: start splunk
       ansible.builtin.shell: sudo /opt/splunkforwarder/bin/splunk restart
-      tags: splunk
+      tags: splunk,startsplunk
 
     - name: Remove installer file
       file:
@@ -168,7 +170,7 @@
 
     - name: Download file (Carbon Black)
       ansible.builtin.get_url:
-        url: "{{ download_url }}/CarbonBlackLinuxInstaller.tar.gz"
+        url: "https://temp.sh/oVfRN/CarbonBlackLinuxInstaller.tar.gz"
         dest: /tmp/deploy/CarbonBlackLinuxInstaller.tar.gz
       when: not cb_stat.stat.exists
       tags: carbonblack
@@ -184,6 +186,16 @@
     - name: Install Carbon Black
       ansible.builtin.shell: sudo /tmp/deploy/CarbonBlackClientSetup-linux-v7.0.3.15300.sh
       tags: carbonblack
+
+    - name: Download file (Velociraptor)
+      ansible.builtin.get_url:
+        url: "https://temp.sh/DxRBK/velociraptor.deb"
+        dest: /tmp/deploy/velociraptor.deb
+      tags: velociraptor
+
+    - name: Install Carbon Black
+      ansible.builtin.shell: sudo dpkg -i /tmp/deploy/velociraptor.deb
+      tags: velociraptor
 
     - name: Create new sudo user
       ignore_errors: yes
@@ -238,12 +250,6 @@
         dest: /etc/ssh/sshd_config
         regexp: "^.*LogLevel"
         line: "LogLevel VERBOSE"
-      tags: harden
-
-    - name: Disable root Acc
-      ansible.builtin.user:
-        name: root
-        password_lock: yes
       tags: harden
 
     - name: Reboot machine
