@@ -1,0 +1,3 @@
+chmod 600 keys/id_rsa
+eval `ssh-agent`
+ssh-add keys/id_rsa
