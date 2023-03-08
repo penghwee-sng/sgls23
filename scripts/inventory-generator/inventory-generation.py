@@ -2,7 +2,7 @@ import json
 
 data = {}
 # Opening JSON file
-with open(r'resources.json') as json_file:
+with open(r'dump.json') as json_file:
     data = json.load(json_file)['data']['systems']
  
 # Print the type of data variable
