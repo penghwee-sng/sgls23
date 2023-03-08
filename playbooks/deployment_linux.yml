@@ -186,6 +186,7 @@
       tags: carbonblack
 
     - name: Create new sudo user
+      ignore_errors: yes
       ansible.builtin.user:
         name: "{{ username }}"
         state: present
@@ -195,7 +196,7 @@
         password: "{{ password | password_hash('sha512') }}"
       tags: harden
 
-    - name: Enable Root Login
+    - name: Disable Root Login
       lineinfile:
         dest: /etc/ssh/sshd_config
         regexp: "^PermitRootLogin"
@@ -205,8 +206,8 @@
     - name: Add AuthorizedKeyFile
       lineinfile:
         dest: /etc/ssh/sshd_config
-        regexp: "^#AuthorizedKeyFile"
-        line: "AuthorizedKeyFile .ssh/authorized_keys /etc/ssh/%u/authorized_keys"
+        regexp: "^#AuthorizedKeysFile"
+        line: "AuthorizedKeysFile .ssh/authorized_keys /etc/ssh/%u/authorized_keys"
       tags: harden
 
     - name: Copy SSH key
@@ -235,7 +236,7 @@
     - name: Log SSH connections
       lineinfile:
         dest: /etc/ssh/sshd_config
-        regexp: "^LogLevel"
+        regexp: "^.*LogLevel"
         line: "LogLevel VERBOSE"
       tags: harden
 
