@@ -1,0 +1,42 @@
+---
+- name: Deploying Velociraptor to Windows
+  hosts: windows 
+  vars:
+    - download_url: http://192.168.13.129:8000
+  tasks:
+  - name: Creating ansible_temp directory
+    ignore_errors: True
+    ansible.windows.win_file:
+      path: c:\Users\{{ ansible_user }}\ansible_temp
+      state: directory
+    tags: system
+
+  - name: Download files from Custom Server
+    ignore_errors: True
+    ansible.windows.win_command: "curl.exe {{ download_url }}/velociraptor.exe --output C:\\Users\\{{ ansible_user }}\\ansible_temp\\velociraptor.exe"
+    tags: system
+
+  - ansible.windows.win_command: "curl.exe {{ download_url }}/client.config.yaml --output C:\\Users\\{{ ansible_user }}\\ansible_temp\\client.config.yaml"
+    tags: system
+
+  - name: Disabling UAC for Admin
+    ignore_errors: True
+    ansible.windows.win_command: REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 0 /f
+    tags: system
+
+  - name: Installing SysMon
+    ignore_errors: True
+    ansible.windows.win_command: C:/Users/{{ ansible_user }}/ansible_temp/velociraptor.exe --config client.config.yaml service install
+    tags: velociraptor
+  
+  - name: Enabling UAC for Admin
+    ignore_errors: True
+    ansible.windows.win_command: REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 1 /f
+    tags: system
+  
+  - name: Removing ansible_temp directory
+    ignore_errors: True
+    ansible.windows.win_file:
+      path: c:\Users\{{ ansible_user }}\ansible_temp
+      state: absent
+    tags: system
