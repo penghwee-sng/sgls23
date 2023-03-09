@@ -2,7 +2,7 @@ import json
 
 data = {}
 # Opening JSON file
-with open(r'dump.json') as json_file:
+with open(r'scripts\inventory-generator\dump.json') as json_file:
     data = json.load(json_file)['data']['systems']
  
 # Print the type of data variable
