@@ -8,7 +8,7 @@ with open(r'scripts\inventory-generator\Password List - Use This.csv') as csvfil
         password = row['Changed to another password? Write it here. (use <> if it\'s not new password)'] if updated_password.strip() != "" and updated_password[0] != "<" else row['Password to change to']
         username = row['New username, or non-default username']
 
-        with open('scripts\inventory-generator\inventory.ini', 'r+') as inventory_file:
+        with open('inventory.ini', 'r+') as inventory_file:
             lines = inventory_file.readlines()
             inventory_file.seek(0)
             for i, line in enumerate(lines):
