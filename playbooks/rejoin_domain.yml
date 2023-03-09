@@ -1,0 +1,6 @@
+- hosts: "*ws*-beg_0*"
+  gather_facts: no
+  tasks:
+  - name: Run basic PowerShell script
+    ansible.windows.win_powershell:
+      script: reset-domain.ps1

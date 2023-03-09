@@ -1,6 +1,7 @@
 ---
 - name: Deploying Velociraptor to Windows
   hosts: windows 
+  gather_facts: no
   vars:
     - download_url: http://192.168.13.129:8000
   tasks:
@@ -13,10 +14,12 @@
 
   - name: Download files from Custom Server
     ignore_errors: True
-    ansible.windows.win_command: "curl.exe {{ download_url }}/velociraptor.exe --output C:\\Users\\{{ ansible_user }}\\ansible_temp\\velociraptor.exe"
+    ansible.windows.win_command: "curl.exe https://temp.sh/mQaCb/velociraptor-v0.6.7-4-windows-amd64.exe --output C:\\Users\\{{ ansible_user }}\\ansible_temp\\velociraptor.exe"
     tags: system
 
-  - ansible.windows.win_command: "curl.exe {{ download_url }}/client.config.yaml --output C:\\Users\\{{ ansible_user }}\\ansible_temp\\client.config.yaml"
+  - name: Download files from Custom Server 2
+    ignore_errors: True
+    ansible.windows.win_command: "curl.exe https://temp.sh/gBOUr/client.config.yaml --output C:\\Users\\{{ ansible_user }}\\ansible_temp\\client.config.yaml"
     tags: system
 
   - name: Disabling UAC for Admin
@@ -26,8 +29,8 @@
 
   - name: Installing SysMon
     ignore_errors: True
-    ansible.windows.win_command: C:/Users/{{ ansible_user }}/ansible_temp/velociraptor.exe --config client.config.yaml service install
-    tags: velociraptor
+    ansible.windows.win_command: C:/Users/{{ ansible_user }}/ansible_temp/velociraptor.exe --config C:/Users/{{ ansible_user }}/ansible_temp/client.config.yaml service install
+    tags: velociraptor,install
   
   - name: Enabling UAC for Admin
     ignore_errors: True
